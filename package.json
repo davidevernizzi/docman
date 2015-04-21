@@ -1,0 +1,13 @@
+{
+  "name": "toptal_task",
+  "version": "0.0.1",
+  "description": "toptal_task",
+  "dependencies": {
+    "moment": "^2.9.0",
+    "react": "^0.12.2",
+    "react-bootstrap": "^0.16.1",
+    "react-infinite-scroll": "^0.1.5",
+    "react-tools": "^0.12.2",
+    "reactify": "^1.0.0"
+  }
+}
