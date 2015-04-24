@@ -94,6 +94,36 @@ var RequestHeaders = React.createClass({
     }
 });
 
+var RequestCurlUsage = React.createClass({
+    render: function() {
+        var request = this.props.request;
+        switch (request.dataMode) {
+            case 'raw':
+                var curlCommand = <code>curl -X {request.method} -H {request.headers} -d {request.rawModeData} {request.url};</code>;
+                return (
+                    <RequestDetails type='Curl' value={curlCommand} />
+                );
+                break;
+            case 'params':
+                var data = request.data.map(function(param, index) {
+                    var key = param.key.trim();
+                    var value = param.value.trim();
+                    return <code>{key}={value}</code>;
+                });
+                console.log(data);
+                var dataStr = data.join('&');
+                var curlCommand = <code>curl -X {request.method} -H {request.headers} -d "{dataStr}" {request.url};</code>;
+                return (
+                    <RequestDetails type='Curl' value={curlCommand} />
+                );
+                break;
+            default:
+                return <div><code>curl {request.dataMode}</code></div>;
+
+        }
+    }
+});
+
 var Request = React.createClass({
     render: function() {
         var request = this.props.request;
@@ -107,6 +137,12 @@ var Request = React.createClass({
                 break;
             case 'POST':
                 methodClass = 'info';
+                break;
+            case 'PUT':
+                methodClass = 'warning';
+                break;
+            case 'DELETE':
+                methodClass = 'danger';
                 break;
             default:
                 methodClass = 'default';
@@ -128,6 +164,7 @@ var Request = React.createClass({
                 <hr className='col-xs-8'/>
                 <RequestHeaders request={request}/>
                 <RequestData request={request}/>
+                <RequestCurlUsage request={request}/>
             </div>
             );
     }
