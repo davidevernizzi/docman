@@ -97,9 +97,19 @@ var RequestHeaders = React.createClass({
 var RequestCurlUsage = React.createClass({
     render: function() {
         var request = this.props.request;
+        var headers = request.headers.split('\n');
+        var headersString = '';
+        var i = 0;
+
+        for (i=0; i<headers.length; i++) {
+            if (headers[i] !== '') {
+                headersString += '-H "' + headers[i] + '" ';
+            }
+        }
+
         switch (request.dataMode) {
             case 'raw':
-                var curlCommand = <code>curl -X {request.method} -H {request.headers} -d {request.rawModeData} {request.url};</code>;
+                var curlCommand = <code>curl -X {request.method} -H {headersString} -d '{request.rawModeData}' '{request.url}';</code>;
                 return (
                     <RequestDetails type='Curl' value={curlCommand} />
                 );
@@ -108,11 +118,10 @@ var RequestCurlUsage = React.createClass({
                 var data = request.data.map(function(param, index) {
                     var key = param.key.trim();
                     var value = param.value.trim();
-                    return <code>{key}={value}</code>;
+                    return key + '="' + value + '"';
                 });
-                console.log(data);
                 var dataStr = data.join('&');
-                var curlCommand = <code>curl -X {request.method} -H {request.headers} -d "{dataStr}" {request.url};</code>;
+                var curlCommand = <code>curl -X {request.method} {headersString} -d '{dataStr}' '{request.url}';</code>;
                 return (
                     <RequestDetails type='Curl' value={curlCommand} />
                 );
@@ -189,6 +198,17 @@ var DocBar = React.createClass({
     }
 });
 
+var Faq = React.createClass({
+    render: function() {
+        return (
+            <div className='col-xs-12'>
+                <div><strong>{this.props.question}</strong></div>
+                <div dangerouslySetInnerHTML={{__html: this.props.answer}} />
+            </div>
+            );
+    }
+});
+
 var Doc = React.createClass({
     getInitialState: function() {
         return {
@@ -203,16 +223,23 @@ var Doc = React.createClass({
         this.setState(newState);
     },
     render: function() {
-        console.log(this.state);
         return (
             <div className="docman">
                 <PageHeader>Docman <small>documentation for Postman</small></PageHeader>
                 <div id='apiBar' className='apiBar'>
                     <ApiBar updateState={this.updateState} />
+                    <h3 className='col-xs-12'>FAQ</h3>
+                    <Faq question='What is docman?' answer='docman is a simple tool to create clean documentation from postman collections' />
+                    <Faq question='What is postman?' answer='postman is an awsome tool to build and test your API. Check out more <a href="https://www.getpostman.com/">here</a>' />
+                    <Faq question='Why another tool to document APIs?' answer='While there are many great tools I could not find anyone that works with postma. And postman is so awesome I really want to use it :-)' />
+                    <Faq question='Uhm, what if I want to try docman, but I do not use postman (yet)' answer='Try a <a href="https://www.getpostman.com/collections/979952cbb87f94b26336">demo collection</a>' />
+                    <Faq question='Okay, it looks promising, but there is still a lot to do. And something does not work' answer='Fork me on <a href="https://github.com/davidevernizzi/docman">github</a> or submit <a href="https://github.com/davidevernizzi/docman/issues">issues</a> :-)' />
                 </div>
-                <br/>
                 <div className='docBar'>
                     <DocBar state={this.state.api} />
+                </div>
+                <div className='col-xs-12 footer'>
+                    <div>Made with ♥ by <a href='http://www.vernizzis.it'>dave</a></div>
                 </div>
             </div>
         );
