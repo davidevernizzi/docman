@@ -16,8 +16,50 @@ code {
 }
 
 .footer {
+    /*
     margin-top:2em;
     padding-top: 1em;
     padding-bottom: 1em;
     border-top: 1px solid #eee;
+    */
+}
+
+.header {
+    color: white;
+    font-weight: 900;
+}
+
+body {
+    background-image: url("../img/cover.jpg");
+    height: auto;
+}
+
+footer {
+    opacity:0.6;
+}
+
+.features {
+    background-color: white;
+}
+
+.fimage {
+    height: 100px;
+}
+
+.fcontainer {
+    padding: 3% 20%;
+}
+
+#hero-caption {
+	color: #F2F2F2;
+	font-family: 'Titillium Web', sans-serif;
+	font-weight: 300;
+	margin-top: 45px;
+}
+
+#small-hero-caption {
+	color: #F2F2F2;
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
+    line-height: 24px;
 }
