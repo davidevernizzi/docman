@@ -11,27 +11,58 @@ var ListGroupItem = require('react-bootstrap').ListGroupItem;
 var PageHeader = require('react-bootstrap').PageHeader;
 var Panel = require('react-bootstrap').Panel;
 var PanelGroup = require('react-bootstrap').PanelGroup;
+var JSZip = require("jszip");
 
+var toSave="";
 var ApiBar = React.createClass({
     handleSubmit: function(e) {
         e.preventDefault();
-        var api = JSON.parse(e.target.api.value);
+        var api = JSON.parse($(e.currentTarget).parents('form').find("[name=api]").val());
         this.props.updateState(api);
         $('#apiBar').hide();
+    },
+    handleSubmitSave: function(e) {
+        e.preventDefault();
+        var api = JSON.parse($(e.currentTarget).parents('form').find("[name=api]").val());
+        this.props.updateState(api);
+        $('#apiBar').hide();
+        /**
+         * Zip the html ,css and js
+         * @type {JSZip}
+         */
+        var zip = new JSZip();
+        var docmanFiles = zip.folder("docman");
+        var head = React.renderComponentToString(<DocBarHead state={api}/> );
+        var toSave=React.renderComponentToString(<DocBar state={api} />);
+        docmanFiles.file("docman.html", head+toSave);
+        var src = docmanFiles.folder("css");
+        $.get("css/style.css", function(data){
+            src.file("style.css", data);
+            var content = zip.generate({type:"blob"});
+            saveAs(content, "docman.zip");
+        })
     },
     render: function() {
         return (
             <div>
                 <h3>Paste below your postman collection</h3>
-                <form onSubmit={this.handleSubmit}>
+                <form >
                     <Input type='textarea' name='api' rows='20' labelClassName='col-xs-1' wrapperClassName='col-xs-10' />
-                    <Input type="submit" value="Doc me now" wrapperClassName='col-xs-1' />
+                    <Input onClick={this.handleSubmit} type="button" name="preview" value="Doc me now" wrapperClassName='col-xs-1' />
+                    <Input onClick={this.handleSubmitSave} type="button" name="download" value="Generate and Download" wrapperClassName='col-xs-1' />
                 </form>
             </div>
         );
     }
 });
-
+var DocBarHead = React.createClass({
+    render: function() {
+        var innerHtmlHead=$("head").html();
+        return (
+            <head dangerouslySetInnerHTML={{__html: innerHtmlHead}}></head>
+        );
+    }
+});
 var RequestDetails = React.createClass({
     render: function() {
         return (
@@ -191,13 +222,11 @@ var Request = React.createClass({
             );
     }
 });
-
 var DocBar = React.createClass({
     render: function() {
+        var toRender=null;
         var api = this.props.state;
         var requestGroupItems=null;
-
-
 
         var requestGroups=Underscore.groupBy(api.requests, function(request){
             return request.folder;
@@ -217,14 +246,20 @@ var DocBar = React.createClass({
             </ListGroup></Panel>);
         });
 
-        return (
-            <div>
-            <PanelGroup>
-            <h1 className='apiTitle'>{api.name}</h1>
-                {requestGroupsToRender}
-            </PanelGroup>
-            </div>
+        toRender=(
+          <div>
+              <PanelGroup>
+                  <h1 className='apiTitle'>{api.name}</h1>
+                  {requestGroupsToRender}
+              </PanelGroup>
+          </div>
         );
+
+
+        return toRender;
+    },
+    renderComponentToStaticMarkup: function(){
+        return "<div>";
     }
 });
 
@@ -252,6 +287,7 @@ var Doc = React.createClass({
         var newState = {api: json};
         this.setState(newState);
     },
+
     render: function() {
         return (
             <div className="docman">
