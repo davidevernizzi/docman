@@ -34135,6 +34135,7 @@ var Underscore= require('underscore');
 
 var Button = require('react-bootstrap').Button;
 var Input = require('react-bootstrap').Input;
+var Row = require('react-bootstrap').Row;
 var Label = require('react-bootstrap').Label;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
@@ -34162,8 +34163,8 @@ var ApiBar = React.createClass({displayName: "ApiBar",
          */
         var zip = new JSZip();
         var docmanFiles = zip.folder("docman");
-        var head = React.renderComponentToString(React.createElement(DocBarHead, {state: api}) );
-        var toSave=React.renderComponentToString(React.createElement(DocBar, {state: api}));
+        var head = React.renderToString(React.createElement(DocBarHead, {state: api}) );
+        var toSave=React.renderToString(React.createElement(DocBar, {state: api}));
         docmanFiles.file("docman.html", head+toSave);
         var src = docmanFiles.folder("css");
         $.get("css/style.css", function(data){
@@ -34177,9 +34178,13 @@ var ApiBar = React.createClass({displayName: "ApiBar",
             React.createElement("div", null, 
                 React.createElement("h3", null, "Paste below your postman collection"), 
                 React.createElement("form", null, 
-                    React.createElement(Input, {type: "textarea", name: "api", rows: "20", labelClassName: "col-xs-1", wrapperClassName: "col-xs-10"}), 
-                    React.createElement(Input, {onClick: this.handleSubmit, type: "button", name: "preview", value: "Doc me now", wrapperClassName: "col-xs-1"}), 
-                    React.createElement(Input, {onClick: this.handleSubmitSave, type: "button", name: "download", value: "Generate and Download", wrapperClassName: "col-xs-1"})
+                    React.createElement(Row, {className: "actionButtons"}, 
+                            React.createElement(Input, {onClick: this.handleSubmit, className: "btn btn-primary", type: "button", name: "preview", value: "View docs", wrapperClassName: "col-xs-6"}), 
+                            React.createElement(Input, {onClick: this.handleSubmitSave, className: "btn btn-success", type: "button", name: "download", value: "Download docs", wrapperClassName: "col-xs-6"})
+                    ), 
+                    React.createElement(Row, null, 
+                        React.createElement(Input, {type: "textarea", name: "api", rows: "20", labelClassName: "col-xs-1", wrapperClassName: "col-xs-12"})
+                    )
                 )
             )
         );
@@ -34387,10 +34392,8 @@ var DocBar = React.createClass({displayName: "DocBar",
 
 
         return toRender;
-    },
-    renderComponentToStaticMarkup: function(){
-        return "<div>";
     }
+
 });
 
 var Faq = React.createClass({displayName: "Faq",
