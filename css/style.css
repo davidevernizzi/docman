@@ -21,3 +21,37 @@ code {
     padding-bottom: 1em;
     border-top: 1px solid #eee;
 }
+/**
+EXTENDED VERB METHODS COLOR SCHEME
+**/
+.label-post{
+    background-color: #5bc0de;
+}
+
+.label-put{
+    background-color: #f0ad4e;
+}
+
+.label-delete{
+    background-color: #d9534f;
+}
+
+.label-get{
+    background-color: #5cb85c;
+}
+
+.label-patch{
+    background-color: #AA9A66;
+
+}
+
+.label-head{
+    background-color: #ca30d2;
+
+}
+
+.label-options{
+    background-color: #000073;
+
+}
+
