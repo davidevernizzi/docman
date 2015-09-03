@@ -9,12 +9,16 @@ code {
 .details {
     margin-bottom: 5px;
 }
+.actionButtons{
 
-.form-group div{
-    padding: 0px;
-    margin-right: 5px;
+    margin-bottom: 20px;
+
 }
+.actionButtons .form-group{
 
+    margin-bottom: 0px;
+
+}
 .footer {
     margin-top:2em;
     padding-top: 1em;
