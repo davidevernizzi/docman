@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react');
+var Underscore= require('underscore');
 
 var Button = require('react-bootstrap').Button;
 var Input = require('react-bootstrap').Input;
@@ -8,6 +9,8 @@ var Label = require('react-bootstrap').Label;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 var PageHeader = require('react-bootstrap').PageHeader;
+var Panel = require('react-bootstrap').Panel;
+var PanelGroup = require('react-bootstrap').PanelGroup;
 
 var ApiBar = React.createClass({
     handleSubmit: function(e) {
@@ -140,30 +143,40 @@ var Request = React.createClass({
         var requestHeader = '';
         var requestData = '';
 
+        var methodClasses="col-xs-1 apiMethod ";
         switch (request.method) {
             case 'GET':
-                methodClass = 'success';
+                methodClass = 'label-get';
                 break;
             case 'POST':
-                methodClass = 'info';
+                methodClass = 'label-post';
                 break;
             case 'PUT':
-                methodClass = 'warning';
+                methodClass = 'label-put';
                 break;
             case 'DELETE':
-                methodClass = 'danger';
+                methodClass = 'label-delete';
+                break;
+            case 'PATCH':
+                methodClass = 'label-patch';
+                break;
+            case 'HEAD':
+                methodClass = 'label-head';
+                break;
+            case 'OPTIONS':
+                methodClass = 'label-options';
                 break;
             default:
                 methodClass = 'default';
                 break;
         }
-
+        methodClasses=methodClasses+" "+methodClass;
         return (
             <div className='row apiElement'>
                 <h3 className='col-xs-8 apiName'>{request.name}</h3>
                 <h4>
                     <div className='col-xs-12'>
-                        <Label className='col-xs-1 apiMethod' bsStyle={methodClass}>{request.method}</Label>
+                        <Label className={methodClasses} >{request.method}</Label>
                         <div className='col-xs-10 apiUrl'>
                             <code className='col-xs-12'>{request.url}</code>
                             <div className='col-xs-12'>{request.description}</div>
@@ -182,17 +195,34 @@ var Request = React.createClass({
 var DocBar = React.createClass({
     render: function() {
         var api = this.props.state;
-        var requests = api.requests.map(function(request) {
-            return (
-                <ListGroupItem><Request request={request} /></ListGroupItem>
-                );
+        var requestGroupItems=null;
+
+
+
+        var requestGroups=Underscore.groupBy(api.requests, function(request){
+            return request.folder;
         });
+
+        var requestGroupsToRender = Underscore.map(requestGroups,function(requestGroup) {
+            requestGroupItems = Underscore.map(requestGroup,function(requestGroupItem){
+                return (<ListGroupItem><Request request={requestGroupItem} /></ListGroupItem>);
+            });
+            var folderIndex=Underscore.findIndex(api.folders, function(folder){
+                return folder.id===Underscore.first(requestGroup).folder;
+            });
+            var folderName= (folderIndex!==-1)? api.folders[folderIndex].name: requestGroup.folder;
+            var folderLink="#"+folderName;
+            return (<Panel collapsible defaultExpanded header={folderName}> <ListGroup href={folderLink} >
+                {requestGroupItems}
+            </ListGroup></Panel>);
+        });
+
         return (
             <div>
+            <PanelGroup>
             <h1 className='apiTitle'>{api.name}</h1>
-            <ListGroup>
-            {requests}
-            </ListGroup>
+                {requestGroupsToRender}
+            </PanelGroup>
             </div>
         );
     }
@@ -213,8 +243,8 @@ var Doc = React.createClass({
     getInitialState: function() {
         return {
             api: {
-                name: '',
-    requests: [],
+            name: '',
+            requests: []
             }
         };
     },
