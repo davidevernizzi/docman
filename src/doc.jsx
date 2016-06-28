@@ -88,7 +88,7 @@ var RequestData = React.createClass({
                 return <RequestDetails type='Raw data' value={request.rawModeData} />;
                 break;
             case 'params':
-                if (request.data.length>0) {
+              if (request.data && request.data.length>0) {
                     var data = request.data.map(function(param, index) {
                         if (index > 0) {
                             return (
@@ -128,7 +128,7 @@ var RequestHeaders = React.createClass({
                 <RequestDetails type='Headers' value={this.props.request.headers} />
             );
         }
-            
+
         return <span />;
     }
 });
@@ -145,7 +145,6 @@ var RequestCurlUsage = React.createClass({
                 headersString += '-H "' + headers[i] + '" ';
             }
         }
-
         switch (request.dataMode) {
             case 'raw':
                 var curlCommand = <code>curl -X {request.method} -H {headersString} -d '{request.rawModeData}' '{request.url}';</code>;
@@ -154,17 +153,24 @@ var RequestCurlUsage = React.createClass({
                 );
                 break;
             case 'params':
-                var data = request.data.map(function(param, index) {
-                    var key = param.key.trim();
-                    var value = param.value.trim();
-                    return key + '="' + value + '"';
-                });
-                var dataStr = data.join('&');
-                var curlCommand = <code>curl -X {request.method} {headersString} -d '{dataStr}' '{request.url}';</code>;
-                return (
-                    <RequestDetails type='Curl' value={curlCommand} />
-                );
-                break;
+                if (request.data){
+                    var data = request.data.map(function(param, index) {
+                        var key = param.key.trim();
+                        var value = param.value.trim();
+                        return key + '="' + value + '"';
+                    });
+                    var dataStr = data.join('&');
+                    var curlCommand = <code>curl -X {request.method} {headersString} -d '{dataStr}' '{request.url}';</code>;
+                    return (
+                        <RequestDetails type='Curl' value={curlCommand} />
+                    );
+                    break;
+                }else{
+                    var curlCommand = <code>curl -X {request.method} -H {headersString}  '{request.url}';</code>;
+                    return (
+                        <RequestDetails type='Curl' value={curlCommand} />
+                    );
+                }
             default:
                 return <div><code>curl {request.dataMode}</code></div>;
 
