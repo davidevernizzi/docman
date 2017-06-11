@@ -14,6 +14,7 @@ A simple page to generate documentation from postman collections
 ## To hack
 
 1. `npm install`
-2. `watchify -t reactify src/main.jsx -o js/main.js`
+2. `npm run watch`
+3.  You can run the web app with any simple http server. For instance, `python -m SimpleHTTPServer` will let you access it in localhost:8000/index.html to generate and view docs.
 3. have fun ;-)
 
