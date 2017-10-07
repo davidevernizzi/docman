@@ -1,4 +1,6 @@
-# docman 
+NOTE: I am not supporting the project. If you want to take over, just ask to be added as an owner. Peace + love.
+
+# docman
 A simple page to generate documentation from postman collections
 
 ## Features: 
